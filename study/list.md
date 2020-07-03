@@ -3,6 +3,7 @@
 - 단순 구현
     - 행렬 제곱 logn 코드
     - knap-sack
+    - LIS(n log n + 요소): 있으면 편하다.
 
 - 그래프
     - 위상 정렬
@@ -34,7 +35,7 @@
 
 
 - 문자열 관련
-    - LIS(n log n + 요소): 있으면 편하다.
+    - LCS
     - 트라이
     - Suffix array and LCP array
     - ext/rope
