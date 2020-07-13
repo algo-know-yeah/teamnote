@@ -9,48 +9,48 @@ struct Treap {
 	int size = 1, prio = rand();
 	type key;
 	Treap(type key) : key(key) { }
-	void calc_size() {
+	void calcSize() {
 		size = 1;
 		if (left != NULL) size += left->size;
 		if (right != NULL) size += right->size;
 	}
-	void set_left(Treap* l) { left = l, calc_size(); }
-	void set_right(Treap* r) { right = r, calc_size(); }
+	void setLeft(Treap* l) { left = l, calcSize(); }
+	void setRight(Treap* r) { right = r, calcSize(); }
 };
 typedef pair<Treap*, Treap*> TPair;
 TPair split(Treap* root, type key) {
 	if (root == NULL) return TPair(NULL, NULL);
 	if (root->key < key) {
 		TPair rs = split(root->right, key);
-		root->set_right(rs.first);
+		root->setRight(rs.first);
 		return TPair(root, rs.second);
 	}
 	TPair ls = split(root->left, key);
-	root->set_left(ls.second);
+	root->setLeft(ls.second);
 	return TPair(ls.first, root);
 }
 Treap* insert(Treap* root, Treap* node) {
 	if (root == NULL) return node;
 	if (root->prio < node->prio) {
 		TPair s = split(root, node->key);
-		node->set_left(s.first);
-		node->set_right(s.second);
+		node->setLeft(s.first);
+		node->setRight(s.second);
 		return node;
 	}
 	else if (node->key < root->key)
-		root->set_left(insert(root->left, node));
+		root->setLeft(insert(root->left, node));
 	else
-		root->set_right(insert(root->right, node));
+		root->setRight(insert(root->right, node));
 	return root;
 }
 Treap* merge(Treap* a, Treap* b) {
 	if (a == NULL) return b;
 	if (b == NULL) return a;
 	if (a->prio < b->prio) {
-		b->set_left(merge(a, b->left));
+		b->setLeft(merge(a, b->left));
 		return b;
 	}
-	a->set_right(merge(a->right, b));
+	a->setRight(merge(a->right, b));
 	return a;
 }
 Treap* erase(Treap* root, type key) {
@@ -61,9 +61,9 @@ Treap* erase(Treap* root, type key) {
 		return ret;
 	}
 	if (key < root->key)
-		root->set_left(erase(root->left, key));
+		root->setLeft(erase(root->left, key));
 	else
-		root->set_right(erase(root->right, key));
+		root->setRight(erase(root->right, key));
 	return root;
 }
 Treap* kth(Treap* root, int k) { // kth key
