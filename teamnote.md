@@ -1,10 +1,10 @@
 # algo-know-yeah Team Note
 
-| | |
+| ID | 이름 |
 |--|--|
 |singun11|김신건|
 |antifly55|서형빈|
-|loes353|최성훈|
+|Neogulee|최성훈|
 
 ## Table of contents
 
@@ -12,12 +12,22 @@
 
 1. Graph
     1. dijkstra
-    2. 
+    2. bellman-ford
+    3. kruskal
+    4. prim
+    5. topological sort
+    6. . union-find
 
-2. String
+2. Tree
+    1. segment tree
+    2. segment tree with lazy propagation
+
+3. String
     1. KMP
-    2. 
-3. 
+
+4. Extra
+    1. Treap 
+    2. MCC
 
 ## 0. Base
 ```cpp
@@ -85,7 +95,27 @@ ll dijkstra(int n,int start) {
 }
 ```
 
-### 1.2. 
+### 1.2. bellman-ford
+```cpp
+
+```
+### 1.3. kruskal
+```cpp
+
+```
+### 1.4. prim
+```cpp
+
+```
+### 1.5. topological sort 
+```cpp
+
+```
+
+### 1.6. union-find
+```cpp
+
+```
 
 ## 2. String
 
