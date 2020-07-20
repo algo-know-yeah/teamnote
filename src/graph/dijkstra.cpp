@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 
-#define MAX 100000
+#define MAX_V 100000
 #define INF (ll)1e18
 
 using namespace std;
@@ -9,7 +9,7 @@ typedef long long ll;
 struct edge {
 	int node;
 	ll cost;
-	bool operator<(const st &to) const {
+	bool operator<(const edge &to) const {
 		return cost > to.cost;
 	}
 };
@@ -28,7 +28,7 @@ ll dijkstra(int n,int start) {
 
 		if (cur.cost > dist[cur.node]) continue;
 
-		for (st &nxt : adj[cur.node])
+		for (edge &nxt : adj[cur.node])
 			if (dist[cur.node] + nxt.cost < dist[nxt.node]) {
 				dist[nxt.node] = dist[cur.node] + nxt.cost;
 				pq.push({ nxt.node, dist[nxt.node] });
