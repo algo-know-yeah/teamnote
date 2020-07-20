@@ -11,15 +11,18 @@
 using namespace std;
 typedef long long ll;
 
+
 struct edge {
 	int to, cost;
 };
 
+int n;
 vector<edge> v[MAX];
 ll D[MAX];
-int n;
+bool bellman(ll start_point){
+    fill(D,D+n+1, INF);
+    D[start_point] = 0;
 
-bool bellman(){
 	bool isCycle = false;
 	for1(1, n+1) {
 		for1j(1, n+1) {
@@ -46,23 +49,19 @@ int main() {
 	int start, end, cost;
 
 	cin >> n >> m;
-	for1(1, n+1) D[i] = INF;
-    
-	// start point is 1
-	D[1] = 0;
+
 	for1(1, m+1) {
 		cin >> start >> end >> cost;
 		v[start].push_back({end, cost});
 	}
 
-	// output
-	if (bellman()) {
-		cout << -1 << '\n';
-		return 0;
+	if (bellman(1)) {
+		cout << -1 << "\n";
 	}
-	for (int v = 2; v <= n; ++v) {
-		ll ans = (D[v] == INF) ? -1 : D[v];
-		cout << ans << '\n';
-	}
-	return 0;
+    else {
+        for1(2,n+1) {
+            ll ans = (D[i] == INF) ? -1 : D[i];
+            cout << ans << "\n";
+        }
+    }
 }

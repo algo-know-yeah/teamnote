@@ -97,7 +97,36 @@ ll dijkstra(int n,int start) {
 
 ### 1.2. bellman-ford
 ```cpp
+#define MAX 100010
+#define INF (ll)1e18
 
+struct edge {
+	int to, cost;
+};
+
+int n;
+vector<edge> v[MAX];
+ll D[MAX];
+bool bellman(ll start_point){
+    fill(D,D+n+1, INF);
+    D[start_point] = 0;
+
+	bool isCycle = false;
+	for1(1, n+1) {
+		for1j(1, n+1) {
+		for(int k=0; k<sz(v[j]); k++) {
+			edge p = v[j][k];
+			int end = p.to;
+			ll dist = D[j] + p.cost;
+				if (D[j] != INF && D[end] > dist) {
+					D[end] = dist;
+					if (i == n) isCycle = true;
+				}
+			}
+		}
+	}
+	return isCycle;
+}
 ```
 ### 1.3. kruskal
 ```cpp
