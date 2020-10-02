@@ -62,11 +62,14 @@ typedef vector <ll> llv1;
 typedef unsigned int uint;
 typedef vector <ull> ullv1;
 typedef vector <vector <ull>> ullv2;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> ll;
 
 int main() {
 	ios::sync_with_stdio(0);
 	cin.tie(0);
 	cout.tie(0);	
+
 }
 ```
 
@@ -79,35 +82,70 @@ int main() {
 #define INF (ll)1e18
 
 struct edge {
-	int node;
-	ll cost;
-	bool operator<(const st &to) const {
-		return cost > to.cost;
-	}
+    ll node;
+    ll cost;
+    bool operator<(const edge &to) const {
+        return cost > to.cost;
+    }
 };
 
-ll dist[MAX_V + 1];
-vector<edge> adj[MAX_V + 1];
+struct WGraph {
+    ll n; 
+    vector<vector<edge>> adj;
+    llv1 prev;
+    WGraph(ll n) : n{n}, adj(n+1) {}
+    void addEdge(ll s, ll e, ll cost) {
+        adj[s].push_back({e, cost});
+    }
 
-ll dijkstra(int n,int start) {
-	fill(dist, dist + n + 1, INF);
-	priority_queue<edge> pq;
-	pq.push({ start, 0 });
-	dist[start] = 0;
-	while (!pq.empty()) {
-		edge cur = pq.top();
-		pq.pop();
+    void input(ll m) { // 단방향
+        ll a, b, c;
+        while(m--) {
+            cin >> a >> b >> c;
+            addEdge(a,b,c);
+        }
+    }
 
-		if (cur.cost > dist[cur.node]) continue;
+    void inputD(ll m) { // 양방향
+        ll a, b, c;
+        while(m--){
+            cin >> a >> b >> c;
+            addEdge(a,b,c);
+            addEdge(b,a,c);
+        }
+    }
 
-		for (st &nxt : adj[cur.node])
-			if (dist[cur.node] + nxt.cost < dist[nxt.node]) {
-				dist[nxt.node] = dist[cur.node] + nxt.cost;
-				pq.push({ nxt.node, dist[nxt.node] });
-			}
-	}
-	return dist[n] >= INF ? -1 : dist[n];
-}
+    llv1 dijkstra(ll s) {
+        llv1 dist(n+1, INF);
+        prev.resize(n+1, -1);
+        priority_queue<edge> pq;
+        pq.push({ s, 0ll });
+        dist[s] = 0;
+        while (!pq.empty()) {
+            edge cur = pq.top();
+            pq.pop();
+            if (cur.cost > dist[cur.node]) continue;
+            for (auto &nxt : adj[cur.node])
+                if (dist[cur.node] + nxt.cost < dist[nxt.node]) {
+                    prev[nxt.node] = cur.node;
+                    dist[nxt.node] = dist[cur.node] + nxt.cost;
+                    pq.push({ nxt.node, dist[nxt.node] });
+                }
+        }
+        return dist;
+    }
+
+    llv1 getPath(ll s, ll e) {
+        llv1 ret;
+        ll current = e;
+        while(current != -1) {
+            ret.push_back(current);
+            current = prev[current];
+        }
+        reverse(ret.begin(), ret.end());
+        return ret;
+    }
+};
 ```
 
 ### 1.2. bellman-ford
