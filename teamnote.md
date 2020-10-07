@@ -913,7 +913,36 @@ ll searchLine(ll x){
 ### 5.7. LIS
 
 ```cpp
-
+void lis(){
+	int n, i, x;
+	iv1 v, buffer;
+	iv1::iterator vv;
+	vector<pair<int, int> > print;
+	v.pb(2000000000);
+	
+	cin >> n;
+	for1(0, n){
+		cin >> x;
+		if(x > *v.rbegin()) {
+			v.pb(x);
+			print.push_back({v.size()-1, x});
+		}
+		else{
+			vv = lower_bound(v.begin(), v.end(), x);
+			*vv = x;
+			print.push_back({vv-v.begin(), x});
+		}
+	}
+	cout << sz(v) << endl;
+	
+	for(i=sz(print)-1;i>-1;i--){
+		if(print[i].first == sz(v)-1){
+			buffer.pb(print[i].second);
+			v.pop_back();
+		}
+	}
+	for(i=sz(buffer)-1;i>-1;i--) cout << buffer[i] << " ";
+}
 ```
 
 ### 5.8. Knapsack
