@@ -68,7 +68,26 @@ int longestFrequent(int k, const string& s) { // k 번 이상 등장하는 부�
 		ret = max(ret, commonPrefix(s, a[i], a[i + k - 1]));
 	return ret;
 }
-
+int getHeight(const string& s, vector<int>& pos) // 최장 중복 부분 문자열의 길이
+{
+	const int n = pos.size();
+	vector<int> rank(n);
+	for (int i = 0; i < n; i++)
+		rank[pos[i]] = i;
+	int h = 0, ret = 0;
+	for (int i = 0; i < n; i++)
+	{
+		if (rank[i] > 1) {
+			int j = pos[rank[i] - 1];
+			while (s[i + h] == s[j + h])
+				h++;
+			ret = max(ret, h);
+			if (h > 0)
+				h--;
+		}
+	}
+	return ret;
+}
 int main(void)
 {
 	ios::sync_with_stdio(0);
