@@ -18,6 +18,9 @@
     5. topological sort
     6. union-find
 	7. SCC
+    8. Maximum flow(dinic)
+    9. Maximum flow minimum cost
+
 
 2. Tree
     1. segment tree
@@ -60,6 +63,7 @@ typedef long long ll;
 typedef vector <int> iv1;
 typedef vector <vector<int>> iv2;
 typedef vector <ll> llv1;
+typedef vector <llv1> llv2;
 typedef unsigned int uint;
 typedef vector <ull> ullv1;
 typedef vector <vector <ull>> ullv2;
@@ -384,6 +388,145 @@ void makeSCC(int v){
 }
 ```
 
+### 1.8. Maximum flow(dinic)
+```cpp
+#define MAX_V 101
+#define SRC 1
+#define SINK MAX_V-1
+#define INF (ll)1e18
+
+struct Edge {
+    ll v, capacity, rev;
+    Edge(ll v, ll capacity, ll rev): v(v), capacity(capacity), rev(rev) {}
+};
+
+vector<Edge> vt[MAX_V];
+ll level[MAX_V];
+ll work[MAX_V];
+
+
+void addEdge(ll start, ll end, ll capacity) {
+    vt[start].emplace_back(end, capacity, (ll)vt[end].size());
+    vt[end].emplace_back(start, capacity, (ll)vt[start].size()-1);
+}
+
+// 레벨 그래프 만드는 BFS
+bool bfs() {
+    memset(level, -1, sizeof(level));        //레벨 그래프 초기화
+    queue <ll> q;
+    level[SRC] = 0;
+    q.push(SRC);
+
+    while(!q.empty()){
+        int here = q.front(); q.pop();
+        for (auto i : vt[here]) {
+            ll there = i.v;
+            if(level[there] == -1 && i.capacity > 0) {
+                level[there] = level[here] + 1;
+                q.push(there);
+            }
+        }
+    }
+    return level[SINK] != -1;
+}
+
+
+ll dfs(ll here, ll crt_capacity) {
+    if(here == SINK) return crt_capacity;
+
+    for(ll &i = work[here]; i < vt[here].size(); i++) {
+        ll there = vt[here][i].v;
+        ll capacity = vt[here][i].capacity;
+
+        if(level[here] + 1 == level[there] && capacity > 0) {
+            ll next_capacity = dfs(there, min(crt_capacity, capacity));
+
+            if(next_capacity > 0) {
+                vt[here][i].capacity -= next_capacity;
+                vt[there][vt[here][i].rev].capacity += next_capacity;
+                return next_capacity;
+            }
+        }
+    }
+    return 0;
+}
+
+ll dinic() {
+    ll ret = 0;
+    while(bfs()) {
+        memset(work, 0, sizeof(work));
+
+        while(1) {
+            ll flow = dfs(SRC, INF);
+            if(!flow) break;
+            ret += flow;
+        }
+    }
+    return ret;
+}
+```
+### 1.9. Maximum flow minimum cost
+```cpp
+#define MX_N 100
+#define MX_NODE 2*(MX_N+2)
+#define SRC MX_NODE-2
+#define SINK MX_NODE-1
+#define INF 1000000000
+
+ll N, M;
+ll cost[MX_NODE][MX_NODE]; // 각 간선의 Cost
+ll capacity[MX_NODE][MX_NODE]; // 각 간선의 용량
+ll flow[MX_NODE][MX_NODE]; // 각 간선에 흐르고 있는 유량
+llv1 edge[MX_NODE]; // 각 정점의 인접리스트
+
+ll MCMF() {
+    ll ret = 0;
+    while(1) {
+        ll prev[MX_NODE], dist[MX_NODE];
+        bool isInQ[MX_NODE];
+        queue<ll> Q;
+        fill(prev, prev+MX_NODE, -1);
+        fill(dist, dist+MX_NODE, INF);
+        fill(isInQ, isInQ+MX_NODE, false);
+
+        dist[SRC] = 0;
+        Q.push(SRC);
+        isInQ[SRC] = true;
+
+        while(!Q.empty()) {
+            ll current = Q.front();
+            Q.pop();
+
+            isInQ[current] = false;
+
+            for(ll next: edge[current])
+                if(capacity[current][next] - flow[current][next] > 0 && dist[next] > dist[current] + cost[current][next]) {
+                    dist[next] = dist[current] + cost[current][next];
+                    prev[next] = current;
+
+                    if(!isInQ[next]) {
+                        Q.push(next);
+                        isInQ[next] = true;
+                    }
+                }
+        }
+
+        if(prev[SINK] == -1) break;
+
+        ll current_flow = INF;
+
+        for(ll i = SINK; i != SRC; i = prev[i])
+            current_flow = min(current_flow, capacity[prev[i]][i] - flow[prev[i]][i]);
+
+        for(ll i = SINK; i != SRC; i = prev[i]) {
+            ret += current_flow * cost[prev[i]][i];
+            flow[prev[i]][i] += current_flow;
+            flow[i][prev[i]] -= current_flow;
+        }
+    }
+    return ret;
+}
+```
 ## 2. Tree
 
 ### 2.1. segment tree
