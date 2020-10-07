@@ -68,7 +68,9 @@ int longestFrequent(int k, const string& s) { // k 번 이상 등장하는 부�
 		ret = max(ret, commonPrefix(s, a[i], a[i + k - 1]));
 	return ret;
 }
-int getHeight(const string& s, vector<int>& pos) // 최장 중복 부분 문자열의 길이
+// 최장 중복 부분 문자열의 길이
+// Kasai, T. et al., "Linear-Time Longest-Common-Prefix Computation in Suffix Arrays and Its Applications"
+int getHeight(const string& s, vector<int>& pos)
 {
 	const int n = pos.size();
 	vector<int> rank(n);
