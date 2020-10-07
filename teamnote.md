@@ -32,6 +32,7 @@
     1. KMP
     2. Trie
     3. Aho-Corasick
+    4. SuffixArray
 	
 
 4. Geometry
@@ -808,6 +809,45 @@ vector<pair<int, int>> ahoCorasick(string& s, Trie* root) {
 }
 ```
 
+### 3.4 SuffixArray
+
+```cpp
+struct SuffixComparator {
+	const vector<int>& group;
+	int t;
+	SuffixComparator(const vector<int>& _group, int _t) :group(_group), t(_t) { }
+	bool operator() (int a, int b) {
+		if (group[a] != group[b])
+			return group[a] < group[b];
+		return group[a + t] < group[b + t];
+	}
+};
+vector<int> getSuffixArr(const string& s) {
+	int n = s.size();
+	int t = 1;
+	vector<int> group(n + 1);
+	for (int i = 0; i < n; i++) group[i] = s[i];
+	group[n] = -1;
+	vector<int> perm(n);
+	for (int i = 0; i < n; i++) perm[i] = i;
+	while (t < n) {
+		SuffixComparator compare(group, t);
+		sort(perm.begin(), perm.end(), compare);
+		t *= 2;
+		if (t >= n) break;
+		vector<int> new_group(n + 1);
+		new_group[n] = -1;
+		new_group[perm[0]] = 0;
+		for (int i = 1; i < n; i++)
+			if (compare(perm[i - 1], perm[i]))
+				new_group[perm[i]] = new_group[perm[i - 1]] + 1;
+			else
+				new_group[perm[i]] = new_group[perm[i - 1]];
+		group = new_group;
+	}
+	return perm;
+}
+```
 	
 ## 4. Geometry
 
