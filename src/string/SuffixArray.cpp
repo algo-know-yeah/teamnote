@@ -79,7 +79,7 @@ int getHeight(const string& s, vector<int>& pos)
 	int h = 0, ret = 0;
 	for (int i = 0; i < n; i++)
 	{
-		if (rank[i] > 1) {
+		if (rank[i] > 0) {
 			int j = pos[rank[i] - 1];
 			while (s[i + h] == s[j + h])
 				h++;
