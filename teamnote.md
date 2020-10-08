@@ -37,6 +37,7 @@
 
 4. Geometry
     1. convexHull
+    2. twofarpoint
 
 5. Extra
     1. Treap 
@@ -49,6 +50,7 @@
 	8. Knapsack
 	9. Coin Change
     10. Knuth Opti
+    11. twonearpoint
 
 ## 0. Base
 ```cpp
@@ -874,7 +876,106 @@ int getHeight(const string& s, vector<int>& pos) // 최장 중복 부분 문자�
 ### 4.1. convexHull
 
 ```cpp
+struct point{
+    ll x,y;
+    ll p=0,q=0;
+};
 
+bool comp1(point a, point b) {
+    if(a.y != b.y) return a.y < b.y;
+    return a.x < b.x;
+}
+
+bool comp2 (point a, point b) {
+    if(a.q * b.p != a.p*b.q)
+        return a.q * b.p < a.p*b.q;
+    return comp1(a,b);
+}
+
+ll ccw(point p1, point p2, point p3) {
+    ll ret = (p1.x * p2.y + p2.x * p3.y + p3.x * p1.y - p2.x * p1.y - p3.x * p2.y - p1.x * p3.y);
+    return ret >0?1:(ret<0?-1:0);
+}
+
+vector <ll> getConvexHull(vector <point> ar) {
+    vector <ll> stk;
+    stk.push_back(0);
+    stk.push_back(1);
+    int next = 2;
+    while(next < ar.size()) {
+        while(stk.size() >= 2) {
+            int s = stk.back();
+            stk.pop_back();
+            int f = stk.back();
+            if(ccw(ar[f],ar[s],ar[next]) > 0) {
+                stk.push_back(s);
+                break;
+            }
+        }
+        stk.push_back(next++);
+    }
+
+    return stk; 
+}
+
+
+ll N;
+point Z;
+
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+
+    vector <point> ar;
+
+    cin >> N;
+    for(int x=0; x<N; x++) {
+        cin >> Z.x >> Z.y;
+        ar.push_back(Z);
+    }
+    
+    sort(ar.begin(),ar.end(),comp1);
+    for(int x=1; x<N; x++) {
+        ar[x].p = ar[x].x - ar[0].x;
+        ar[x].q = ar[x].y - ar[0].y;
+    }
+    sort(ar.begin()+1,ar.end(),comp2);
+    
+    vector <ll> ret = getConvexHull(ar);
+    cout << ret.size();
+}
+```
+
+### 4.2. twofarpoint
+
+```cpp
+
+ll getDist(point p, point q){
+    return (p.x-q.x)*(p.x-q.x) + (p.y-q.y)*(p.y-q.y);
+}
+
+int main(){
+    // convexhull
+    int i, j=0;
+    ll ans = 0;
+    point p1, p2;
+    for(i=0;i<ret.size();i++){
+        int ni = (i+1)%ret.size();
+        while(1){
+            int nj = (j+1) % ret.size();
+            int v = ccw({0, 0}, {ar[ret[ni]].x - ar[ret[i]].x, ar[ret[ni]].y - ar[ret[i]].y}, {ar[ret[nj]].x - ar[ret[j]].x, ar[ret[nj]].y - ar[ret[j]].y});
+            if(v > 0) j = nj;
+            else break;
+        }
+        ll v = getDist(ar[ret[i]], ar[ret[j]]);
+        if(ans < v){
+            ans = v;
+            p1 = ar[ret[i]];
+            p2 = ar[ret[j]];
+        }
+    }
+}
 ```
 
 ## 5. Extra
@@ -966,7 +1067,54 @@ int countLess(Treap* root, type key) { // count less than key
 ### 5.2. MCC
 
 ```cpp
+double getR(double x, double y){
+	return x*x + y*y;
+}
 
+double avg(vector<double> x){
+	double ans=0;
+	for(int i=0; i<sz(x); i++) ans+=x[i];
+	return ans/sz(x);
+}
+
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+
+	double inputx, inputy, rx, ry, distance, lr=1;
+	int n, index;
+	vector<double> x, y;
+	
+	cin >> n;
+	for1(0, n){
+		cin >> inputx >> inputy;
+		x.pb(inputx);
+		y.pb(inputy);
+	}
+	
+	rx = avg(x);
+	ry = avg(y);
+	
+	for1(0, 100000){
+		distance = -1; index = -1;
+		for1j(0, n){
+			if(distance < getR(x[j] - rx, y[j] - ry)){
+				distance = getR(x[j] - rx, y[j] - ry);
+				index = j;
+			}
+		}
+		rx = rx + (x[index] - rx) * lr;
+		ry = ry + (y[index] - ry) * lr;
+		lr *= 0.999;
+	}
+    
+	cout << fixed;
+	cout.precision(2);
+	cout << sqrt(distance) << endl;
+	
+	return 0;
+}
 ```
 
 ### 5.3. ExtendEuclid
@@ -988,6 +1136,14 @@ pii ext_gcd(int a, int b){
 ll mod_inv(int a, int b){
     return (ext_gcd(a, b).first + b) % b;
 }
+
+/*
+Ax + By = C일때
+x0 = s * C/D
+y0 = t * C/D
+x = x0 + k * B/D
+y = y0 - k * A/D
+*/
 ```
 
 ### 5.4. Fermat
@@ -1216,4 +1372,51 @@ then
 dp[i][j] = min(dp[i][k] + dp[k][j]) + C[i][j]
 range of k: A[i, j-1] <= A[i][j]=k <= A[i+1][j]
 */
+```
+
+### 5.11. twonearpoint
+
+```cpp
+struct Point {
+    int x, y;
+};
+ 
+int dist(Point &p, Point &q) {
+    return (p.x-q.x)*(p.x-q.x)+(p.y-q.y)*(p.y-q.y);
+}
+ 
+struct Comp {
+    bool comp_in_x;
+    Comp(bool b) : comp_in_x(b) {}
+    bool operator()(Point &p, Point &q) {
+        return (this->comp_in_x? p.x < q.x : p.y < q.y);
+    }
+};
+ 
+int nearest(vector<Point>::iterator it, int n) {
+    if (n == 2)
+        return dist(it[0], it[1]);
+    if (n == 3)
+        return min({dist(it[0], it[1]), dist(it[1], it[2]), dist(it[2], it[0])});
+     
+    int line = (it[n/2 - 1].x + it[n/2].x) / 2;
+    int d = min(nearest(it, n/2), nearest(it + n/2, n - n/2));
+     
+    vector<Point> mid;
+     
+    for (int i = 0; i < n; i++) {
+        int t = line - it[i].x;
+        if (t*t < d)
+            mid.push_back(it[i]);
+    }
+ 
+    sort(mid.begin(), mid.end(), Comp(false));
+     
+    int mid_sz = mid.size();
+    for (int i = 0; i < mid_sz - 1; i++)
+        for (int j = i + 1; j < mid_sz && (mid[j].y - mid[i].y)*(mid[j].y - mid[i].y) < d; j++)
+            d = min(d, dist(mid[i], mid[j]));
+     
+    return d;
+}
 ```
