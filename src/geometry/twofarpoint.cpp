@@ -79,7 +79,7 @@ int main() {
     
     vector <ll> ret = getConvexHull(ar);
 
-    int i, j=0;
+    int i, j=1;
     ll ans = 0;
     point p1, p2;
     for(i=0;i<ret.size();i++){
