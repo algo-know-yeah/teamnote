@@ -538,37 +538,44 @@ ll MCMF() {
 ### 2.1. segment tree
 
 ```cpp
-ll a[MAX], tree[MAX * 4]; 
-
-void init(int node, int x, int y) {
-	if (x == y) {
-		tree[node] = a[x]; 
-		return; 
+struct SegmentTree {
+	ll a[MAX], tree[MAX * 4];
+	
+	SegmentTree(vector<int> &vec) {
+		for1 (0, vec.size())
+			a[i + 1] = vec[i];
 	}
-	int mid = (x + y)/2; 
-	init(node*2, x, mid); 
-	init(node*2 + 1, mid + 1, y); 
-	tree[node] = tree[node*2] + tree[node*2 + 1];
-}
 
-void update(int pos, ll val, int node, int x, int y) {
-	if (pos < x || pos > y) return; 
-	if (x==y) {
-		tree[node] = val; 
-		return; 
+	void init(int node, int x, int y) {
+		if (x == y) {
+			tree[node] = a[x];
+			return;
+		}
+		int mid = (x + y) / 2;
+		init(node * 2, x, mid);
+		init(node * 2 + 1, mid + 1, y);
+		tree[node] = tree[node * 2] + tree[node * 2 + 1];
 	}
-	int mid = (x + y)/2; 
-	update(pos, val, node*2, x, mid); 
-	update(pos, val, node*2 + 1, mid + 1, y); 
-	tree[node] = tree[node*2] + tree[node*2 + 1];  
-}
 
-ll query(int lo, int hi, int node, int x, int y) {
-	if (lo > y || hi < x) return 0; 
-	if (lo <= x && y <= hi) return tree[node]; 
-	int mid = (x + y)/2;
-	return query(lo, hi, node*2, x, mid) + query(lo, hi, node*2 + 1, mid + 1, y);
-}
+	void update(int pos, ll val, int node, int x, int y) {
+		if (pos < x || pos > y) return;
+		if (x == y) {
+			tree[node] = val;
+			return;
+		}
+		int mid = (x + y) / 2;
+		update(pos, val, node * 2, x, mid);
+		update(pos, val, node * 2 + 1, mid + 1, y);
+		tree[node] = tree[node * 2] + tree[node * 2 + 1];
+	}
+
+	ll query(int lo, int hi, int node, int x, int y) {
+		if (lo > y || hi < x) return 0;
+		if (lo <= x && y <= hi) return tree[node];
+		int mid = (x + y) / 2;
+		return query(lo, hi, node * 2, x, mid) + query(lo, hi, node * 2 + 1, mid + 1, y);
+	}
+};
 ```
 
 ### 2.2. segment tree with lazy propagation
