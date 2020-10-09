@@ -6,6 +6,9 @@
 |antifly55|서형빈|
 |Neogulee|최성훈|
 
+Team ID: 
+비번:
+
 ## Table of contents
 
 0. Base
@@ -27,6 +30,7 @@
     2. segment tree with lazy propagation
     3. merge sort tree
     4. LCA
+    5. Fenwick Tree 2D
 
 3. String
     1. KMP
@@ -197,6 +201,8 @@ bool bellman(ll start_point){
 ### 1.3. kruskal
 
 ```cpp
+#define MAXN 100010
+
 int root[MAXN];
 int level[MAXN];
 
@@ -235,6 +241,31 @@ bool merge(int x, int y) {
 	else root[y] = x;
 	if (level[x] == level[y]) level[x]++;
 	return false;
+}
+
+int main(){
+	ios::sync_with_stdio(false); 
+	cin.tie(NULL); 
+	cout.tie(NULL); 
+
+	int n, m, start, end, cost;
+	
+	cin >> n >> m;
+	vector<Edge> v;
+	for1(0, m){
+		cin >> start >> end >> cost;
+		v.pb(Edge(start, end, cost));
+	}
+	sort(v.begin(), v.end());
+	
+	init(n+1);
+	int sum = 0;
+	for1(0, sz(v)){
+		if(!merge(v[i].node[0], v[i].node[1])){
+			sum += v[i].distance;
+		}
+	}
+	cout << sum << endl;
 }
 ```
 
@@ -297,7 +328,7 @@ int n;
 int link[MAXN];
 iv1 graph[MAXN];
 
-void topologySort() {
+iv1 topologySort() {
 	iv1 result;
 	queue<int> q;
 	
@@ -316,9 +347,7 @@ void topologySort() {
 		}
 	}
 
-	for1(0, n) {
-		cout << result[i] << " ";
-	}
+    return result;
 }
 ```
 
@@ -413,7 +442,8 @@ ll work[MAX_V];
 
 void addEdge(ll start, ll end, ll capacity) {
     vt[start].emplace_back(end, capacity, (ll)vt[end].size());
-    vt[end].emplace_back(start, capacity, (ll)vt[start].size()-1);
+    // 단방향으로 설정시 capacity를 0으로
+    vt[end].emplace_back(start, capacity, (ll)vt[start].size()-1); 
 }
 
 // 레벨 그래프 만드는 BFS
@@ -695,6 +725,83 @@ struct LCA {
 	}
 };
 ```
+### 2.5. Fenwick Tree 2D
+
+```cpp
+struct FenwickTree2D{
+    ll size;
+    llv2 data;
+
+    FenwickTree2D(ll N) {
+        size = N;
+        data = llv2(size+1, llv1(size+1));
+    }
+
+    void update(int x, int y, ll val) {
+        ll dv = val - sum(x, y, x, y);
+        while(x <= size) {
+            int y2 = y;
+            while(y2 <= size) {
+                data[x][y2] += dv;
+                y2 += y2 & -y2;
+            }
+            x += x & -x;
+        }
+    }
+
+    ll sum(int x, int y) {
+        ll ret = 0;
+        while(x) {
+            int y2 = y;
+            while(y2) {
+                ret += data[x][y2];
+                y2 -= y2 & -y2;
+            }
+            x -= x & -x;
+        }
+        return ret;
+    }
+
+    ll sum(int x1, int y1, int x2, int y2) {
+        return sum(x2, y2) + sum(x1 - 1, y1 -1) - sum(x1-1, y2) - sum(x2, y1-1);
+    }
+};
+
+ll N, M;
+
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+    
+    cin >> N >> M;
+
+    FenwickTree2D F = FenwickTree2D(N);
+
+    for1(1, N+1) {
+        for1j(1, N+1) {
+            ll a;
+            cin >> a;
+            F.update(i,j,a);
+        }
+    }
+
+    while(M--) {
+        ll w,a,b,c,d;
+        cin >> w;
+        if(w == 0) {
+            cin >> a >> b >> c;
+            F.update(a,b,c);
+        }
+        else {
+            cin >> a >> b >> c >> d;
+            cout << F.sum(a,b,c,d) << "\n";
+        }
+    }
+    
+}
+```
+
 
 ## 3. String
 
@@ -746,6 +853,7 @@ struct Trie {
 			if (chil[i])
 				delete chil[i];
 	}
+    // number -> 문자열 번호(ith string)
 	void insert(string& s, int number, int idx) {
 		if (idx == s.size()) {
 			terminal = number;
@@ -1149,6 +1257,7 @@ y = y0 - k * A/D
 ### 5.4. Fermat
 
 ```cpp
+// p는 무조건 소수
 ll pow(ll a, ll b){
 	if(b == 0) return 1;
 	ll n = pow(a, b/2)%p;
@@ -1319,6 +1428,7 @@ void input() {
 ### 5.9. Coin Change
 
 ```cpp
+// 경우의 수
 ll CC(llv1& coin, ll money, ll MX) {
     ll D[MX];
     fill(D, D+MX, 0);
